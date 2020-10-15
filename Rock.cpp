@@ -1,5 +1,4 @@
 #include "Rock.h"
-#include "Config.h"
 
 Rock::Rock() : inWater(false), rect(), velocity(0),
                visible(false), colorRgb(160, 160, 160) {
@@ -49,25 +48,30 @@ void Rock::setInWater() {
 }
 
 /**
- * 如果未在水中，则a=gravity不变，v=v0+a*timeDuration，s=v0*timeDuration+1/2*a*timeDuration*timeDuration；如果已在水中，则a=gravity-
- * k/w*v0，v=v0+at，s=v0*timeDuration+1/2*a*timeDuration*timeDuration。其中k/w当前设置为0.025。如果当前的y大于窗口的高度则设置visible为false。
+ * 如果未在水中，则a=gravity，v=v0+a*t，s=v0*t+1/2*a*t*t
+ * 如果已在水中，则a=gravity-k/w*v0，v=v0+at，s=v0*t+1/2*a*t*t
+ * 其中k/w当前设置为0.25。如果当前的y大于窗口的高度则设置visible为false
  */
 void Rock::update(double timeDuration) {
-    if (!inWater) {
-        double accelerate = Config::gravity;
-        double lastVelocity = velocity;
-        velocity = lastVelocity + accelerate * timeDuration;
-        int s = static_cast<int>(lastVelocity * timeDuration + 1.0 / 2 * accelerate * timeDuration * timeDuration);
-        rect.y += s;
-    } else {
-        double lastVelocity = velocity;
-        double accelerate = Config::gravity - 0.025 * lastVelocity;
-        velocity = lastVelocity + accelerate * timeDuration;
-        int s = static_cast<int>(lastVelocity * timeDuration + 1.0 / 2 * accelerate * timeDuration * timeDuration);
-        rect.y += s;
-    }
-    if (rect.y > Config::windowHeight) {
-        visible = false;
+    if (visible) {
+        if (!inWater) {
+            double accelerate = Config::gravity;
+            double lastVelocity = velocity;
+            velocity = lastVelocity + accelerate * timeDuration;
+            int distance = static_cast<int>(lastVelocity * timeDuration +
+                                            1.0 / 2 * accelerate * timeDuration * timeDuration);
+            rect.y += distance;
+        } else {
+            double lastVelocity = velocity;
+            double accelerate = Config::gravity - 0.25 * lastVelocity;
+            velocity = lastVelocity + accelerate * timeDuration;
+            int distance = static_cast<int>(lastVelocity * timeDuration +
+                                            1.0 / 2 * accelerate * timeDuration * timeDuration);
+            rect.y += distance;
+        }
+        if (rect.y > Config::windowHeight) {
+            visible = false;
+        }
     }
 }
 

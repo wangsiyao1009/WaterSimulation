@@ -21,7 +21,7 @@ public:
     */
     static constexpr double gravity = 9.8;
     /**
-     * 水平面高度
+     * 水平面位置
      */
     static constexpr int waterHorizon = 500;
     /**
@@ -36,13 +36,12 @@ public:
      * 石头高度
      */
     static constexpr int rockHeight = 50;
-
     /**
-     * 水花宽度
+     * 单个水花宽度
      */
     static constexpr int waterParticleWidth = 10;
     /**
-     * 水花高度
+     * 单个水花高度
      */
     static constexpr int waterParticleHeight = 10;
 

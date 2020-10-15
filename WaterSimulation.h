@@ -1,12 +1,12 @@
 #ifndef WATERSIMULATION_WATERSIMULATION_H
 #define WATERSIMULATION_WATERSIMULATION_H
 
+#include <vector>
+#include <random>
+#include <ctime>
 #include "Rock.h"
 #include "WaterColumn.h"
 #include "WaterParticle.h"
-#include <vector>
-
-using namespace std;
 
 /**
  * 水，可以产生水花、波纹
@@ -33,7 +33,6 @@ private:
      * 岩石
      */
     Rock rock;
-
     /**
      * 水柱
      */
@@ -50,7 +49,6 @@ private:
     void collision();
 
     void render();
-
 };
 
 #endif // WATERSIMULATION_WATERSIMULATION_H

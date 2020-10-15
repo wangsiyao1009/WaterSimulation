@@ -2,7 +2,9 @@
 #define WATERSIMULATION_WATERPARTICLE_H
 
 #include <SDL_render.h>
+#include <cmath>
 #include "ColorRGB.h"
+#include "Config.h"
 
 /**
  * 水花

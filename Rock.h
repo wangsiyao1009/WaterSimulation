@@ -1,10 +1,11 @@
 #ifndef WATERSIMULATION_ROCK_H
 #define WATERSIMULATION_ROCK_H
 
-#include <map>
 #include <SDL.h>
 #include <SDL_render.h>
+#include <map>
 #include "ColorRGB.h"
+#include "Config.h"
 
 using namespace std;
 
@@ -50,10 +51,9 @@ private:
      */
     double velocity;
     /**
-     * visible==false代表岩石已销毁，不再进行渲染
+     * visible==false代表岩石已销毁，不再进行渲染和更新
      */
     bool visible;
-
 };
 
 #endif // WATERSIMULATION_ROCK_H

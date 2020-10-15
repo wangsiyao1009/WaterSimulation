@@ -1,6 +1,8 @@
 #ifndef WATERSIMULATION_WATERCOLUMN_H
 #define WATERSIMULATION_WATERCOLUMN_H
 
+#include <SDL_rect.h>
+#include <SDL_render.h>
 #include "ColorRGB.h"
 #include "Config.h"
 
@@ -16,8 +18,6 @@ public:
     virtual ~WaterColumn();
 
     int getHeight() const;
-
-    int getPositionX() const;
 
     void render(SDL_Renderer *renderer);
 
