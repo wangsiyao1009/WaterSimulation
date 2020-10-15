@@ -1,8 +1,6 @@
-#include "WaterSimulation.h"
-#include <random>
 #include <iostream>
-#include <ctime>
-using namespace std;
+#include "WaterSimulation.h"
+
 WaterSimulation::~WaterSimulation() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -17,13 +15,12 @@ void WaterSimulation::collision() {
         && !rock.isInWater()) {
         rock.setInWater();
         int posX = rock.getPosition().first;
-        posX /= Config::waterColumnWidth;
-        waterColumns[posX].updateVelocity(800);
-        uniform_int_distribution<int> velocityRandom(10, 80);
-        default_random_engine engine(time(0));
-        uniform_int_distribution<int> angleRandom(30, 150);
+        int index = posX / Config::waterColumnWidth;
+        waterColumns[index].updateVelocity(2000);
+        std::uniform_int_distribution<int> velocityRandom(10, 80);
+        std::default_random_engine engine(time(nullptr));
+        std::uniform_int_distribution<int> angleRandom(30, 150);
         for (WaterParticle &particle:waterParticles) {
-			cout << "pariticle" << endl;
             particle.initPositionVisibleSpeed(rock.getPosition().first, Config::waterHorizon,
                                               velocityRandom(engine), angleRandom(engine));
         }
@@ -56,46 +53,45 @@ void WaterSimulation::eventLoop() {
                     break;
             }
         }
-		SDL_SetRenderDrawColor(renderer, 135, 206, 235, 0);
-		SDL_RenderClear(renderer);
-		for (WaterColumn &waterColumn : waterColumns) {
-			waterColumn.update(timeDuration);
-		}
-		for (WaterParticle &particle : waterParticles) {
-			particle.update(timeDuration);
-		}
-		if (rock.isVisible()) {
-			rock.update(timeDuration);
-			collision();
-		}
-		int left[200];
-		int right[200];
-		for (int i = 0; i < 10; ++i) {
-			for (int j = 0; j < waterColumns.size(); ++j) {
-				if (j > 0) {
-					left[j] = (waterColumns[j].getHeight() - waterColumns[j - 1].getHeight());
-					waterColumns[j - 1].updateVelocity(2*left[j]);
-				}
-				if (j < waterColumns.size() - 1) {
-					right[j] = (waterColumns[j].getHeight() - waterColumns[j + 1].getHeight());
-					waterColumns[j + 1].updateVelocity(2*right[j]);
-				}
-			}
-			for (int j = 0; j < waterColumns.size(); ++j) {
-				if (j > 0) {
-					waterColumns[j - 1].updateHeight(0.35*left[j]);
-				}
-				if (j < waterColumns.size() - 1) {
-					waterColumns[j + 1].updateHeight(0.35*right[j]);
-				}
-			}
-		}
-	
-		render();
-		SDL_RenderPresent(renderer);
-		if (timeDuration < (1.0f / 50.0f)) {
-			SDL_Delay((unsigned int)(((1.0f / 50.0f) - timeDuration) * 1000.0f));
-		}
+        for (WaterColumn &waterColumn : waterColumns) {
+            waterColumn.update(timeDuration);
+            std::cout << std::endl;//加上这行后水波会真实很多，暂时不知道原因
+        }
+        for (WaterParticle &particle : waterParticles) {
+            particle.update(timeDuration);
+        }
+        if (rock.isVisible()) {
+            rock.update(timeDuration);
+            collision();
+        }
+        //水波生成
+        int left[200];
+        int right[200];
+        for (int i = 0; i < 20; ++i) {
+            for (int j = 0; j < waterColumns.size(); ++j) {
+                if (j > 0) {
+                    left[j] = (waterColumns[j].getHeight() - waterColumns[j - 1].getHeight());
+                    waterColumns[j - 1].updateVelocity(-left[j]);
+                }
+                if (j < waterColumns.size() - 1) {
+                    right[j] = (waterColumns[j].getHeight() - waterColumns[j + 1].getHeight());
+                    waterColumns[j + 1].updateVelocity(-right[j]);
+                }
+            }
+            for (int j = 0; j < waterColumns.size(); ++j) {
+                if (j > 0) {
+                    waterColumns[j - 1].updateHeight(0.45 * left[j]);
+                }
+                if (j < waterColumns.size() - 1) {
+                    waterColumns[j + 1].updateHeight(0.45 * right[j]);
+                }
+            }
+        }
+        render();
+        SDL_RenderPresent(renderer);
+        if (timeDuration < (1.0f / 40.0f)) {
+            SDL_Delay((unsigned int) (((1.0f / 40.0f) - timeDuration) * 1000.0f));
+        }
     }
 }
 
@@ -114,6 +110,8 @@ WaterSimulation::WaterSimulation() : event(), rock() {
 }
 
 void WaterSimulation::render() {
+    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 0);
+    SDL_RenderClear(renderer);
     for (auto &waterColumn:waterColumns) {
         waterColumn.render(renderer);
     }
