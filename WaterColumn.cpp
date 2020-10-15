@@ -1,8 +1,4 @@
-#include <SDL_rect.h>
-#include <SDL_render.h>
 #include "WaterColumn.h"
-#include <iostream>
-using namespace std;
 
 /**
  * 初始化x位置，和宽度，默认高度和y坐标为水平面
@@ -22,13 +18,6 @@ WaterColumn::~WaterColumn() = default;
  */
 int WaterColumn::getHeight() const {
     return rect.h;
-}
-
-/**
- * 获取X位置，查看是哪一个waterColumn碰撞到了石头
- */
-int WaterColumn::getPositionX() const {
-    return rect.x;
 }
 
 void WaterColumn::render(SDL_Renderer *renderer) {
@@ -52,16 +41,16 @@ void WaterColumn::updateVelocity(int velocityDiff) {
 }
 
 /**
- * 由胡克定律，当水柱偏离水平面的高度时，更新速度和高度，
- * 使之慢慢接近水平面。x=height-waterHorizon。a=x/W，velocityY=vy0+a*timeDuration，s=vy0*timeDuration+1/2*a*timeDuration*timeDuration
+ * 由胡克定律，当水柱偏离水平面的高度时，更新速度和高度，使之慢慢接近水平面
+ * x=posY-waterHorizon。a=x/w，v=v0+a*t，s=v0*t+1/2*a*t*t
  */
 void WaterColumn::update(double timeDuration) {
-    int heightDiff = rect.y - Config::waterHorizon;
-	//cout << heightDiff << endl;
-    double accelerate = 1.0 * heightDiff;
+    int heightDiff = Config::waterHorizon - rect.y;
+    double accelerate = heightDiff;
     double lastVelocity = velocity * 0.85;//摩擦速度衰减
     velocity = lastVelocity + accelerate * timeDuration;
-    int distance = static_cast<int>(lastVelocity * timeDuration + 1.0 / 2 * accelerate * timeDuration * timeDuration);
-    rect.h += distance;
-    rect.y -= distance;
+    int distance = static_cast<int>(lastVelocity * timeDuration +
+                                    1.0 / 2 * accelerate * timeDuration * timeDuration);
+    rect.h -= distance;
+    rect.y += distance;
 }
